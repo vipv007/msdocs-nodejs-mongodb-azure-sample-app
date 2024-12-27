@@ -37,8 +37,9 @@ jobs:
     steps:
     - name: Check out the code
       uses: actions/checkout@v2
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: 'CelesContainerWebApp'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9FBA1DA16A8A484FA3AD7D58823C53F3 }}
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: 'CelesContainerWebApp'  # Replace with your app name
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9FBA1DA16A8A484FA3AD7D58823C53F3 }}  # Replace with your Azure publish profile secret
