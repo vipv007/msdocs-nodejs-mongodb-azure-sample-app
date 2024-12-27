@@ -2,9 +2,15 @@
   "name": "todolist",
   "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "start": "node ./bin/www"
-  },
+    "scripts": {
+      "ng": "ng",
+      "start": "node ./bin/www",
+      "build": "ng build",  
+      "test": "ng test",
+      "lint": "ng lint",
+      "e2e": "ng e2e"
+    },
+  
   "dependencies": {
     "bootstrap": "^5.3.3",
     "cookie-parser": "~1.4.6",
