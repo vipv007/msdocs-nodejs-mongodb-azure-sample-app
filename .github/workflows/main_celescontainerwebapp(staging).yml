@@ -1,41 +1,37 @@
-name: Deploy Angular App to Azure
+name: Deploy to Azure App Service
 
 on:
   push:
     branches:
-      - main # Change this to your default branch if needed
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout code
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Step 2: Set up Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18' # Match your Angular project's Node version
-        cache: 'npm'
+      # --- Install Node.js dependencies and Build ---
+      - name: Set up Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x' # Unified version for both frontend and backend
+          cache: 'npm'
 
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: |
-        npm install
-        npm install axios # Add any other required dependencies here
+      - name: Install dependencies and build project
+        run: |
+          npm install -g @angular/cli # Global Angular CLI for frontend build
+          npm install
+          npm run build --if-present
 
-    # Step 4: Build Angular app
-    - name: Build Angular app
-      run: npm run build -- --configuration=production
-
-    # Step 5: Deploy to Azure App Service
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: celescontainerwebapp # Your App Service name
-        slot-name: staging # Deployment slot (default: production)
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9FBA1DA16A8A484FA3AD7D58823C53F3 }}
-        package: ./dist/fin-tech # Path to your Angular app's build output
+      # --- Deployment to Azure Web App ---
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'CelesContainerWebApp' # Replace with your Azure Web App name
+          slot-name: 'staging'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9FBA1DA16A8A484FA3AD7D58823C53F3 }}
+          package: '.'  # Deploy the entire repository
