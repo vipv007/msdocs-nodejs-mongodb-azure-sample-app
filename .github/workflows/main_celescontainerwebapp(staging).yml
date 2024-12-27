@@ -1,43 +1,40 @@
-name: CI/CD Pipeline to Azure
+name: Deploy Angular App to Azure
 
 on:
   push:
     branches:
-      - main  # Trigger on push to the main branch
-  pull_request:
-    branches:
-      - main  # Trigger on PR to the main branch
+      - main # Change this to your default branch name if needed
 
 jobs:
-  # Job 1: Build and Test
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Check out the code
-      uses: actions/checkout@v2
+    # Step 1: Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v3
 
+    # Step 2: Set up Node.js
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Specify the Node.js version for your app
+        node-version: '18' # Match your Angular project's Node version
+        cache: 'npm'
 
+    # Step 3: Install dependencies
     - name: Install dependencies
-      run: npm install
+      run: npm install -f
+           npm install axios
 
+    # Step 4: Build Angular app
+    - name: Build Angular app
+      run: npm run build -- --configuration=production
 
-  # Job 2: Deploy to Azure Web App
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build  # Ensure this runs after the build job
-    if: github.ref == 'refs/heads/main'  # Deploy only on the main branch
-
-    steps:
-    - name: Check out the code
-      uses: actions/checkout@v2
-
+    # Step 5: Deploy to Azure App Service
     - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v3
+      uses: azure/webapps-deploy@v2
       with:
-        app-name: 'CelesContainerWebApp'  # Replace with your app name
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9FBA1DA16A8A484FA3AD7D58823C53F3 }}  # Replace with your Azure publish profile secret
+        app-name: celescontainerwebapp # Your App Service name
+        slot-name: staging
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9FBA1DA16A8A484FA3AD7D58823C53F3 }}
+        package: ./dist/fin-tech # Replace with your Angular app's dist folder name
